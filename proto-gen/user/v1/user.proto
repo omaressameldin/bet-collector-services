@@ -1,0 +1,61 @@
+syntax = "proto3";
+package v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+message User {
+    string auth_id = 1 [json_name="authId"];
+    string name = 2 [json_name="name"];
+    string avatar = 3 [json_name="avatar"];
+    google.protobuf.Timestamp created_at = 4 [json_name="createdAt"];
+    google.protobuf.Timestamp updated_at = 5 [json_name="updatedAt"];
+}
+
+
+message UserUpdate {
+  google.protobuf.StringValue name = 1 [json_name="name"];
+  google.protobuf.StringValue avatar = 4 [json_name="avatar"];
+  google.protobuf.Timestamp updated_at = 7 [json_name="updatedAt"];
+}
+
+message CreateRequest{
+    string api = 1;
+    User user = 2;
+}
+message CreateResponse{
+    string api = 1;
+}
+
+message ReadRequest{
+    string api = 1;
+    string auth_id = 2;
+}
+message ReadResponse{
+    string api = 1;
+    User user = 2;
+}
+
+message UpdateRequest{
+    string api = 1;
+    string auth_id = 2;
+    UserUpdate user = 3;
+}
+message UpdateResponse{
+    string api = 1;
+}
+
+message DeleteRequest{
+    string api = 1;
+    string auth_id = 2;
+}
+message DeleteResponse{
+    string api = 1;
+}
+
+service UserService {
+    rpc Create(CreateRequest) returns (CreateResponse);
+    rpc Read(ReadRequest) returns (ReadResponse);
+    rpc Update(UpdateRequest) returns (UpdateResponse);
+    rpc Delete(DeleteRequest) returns (DeleteResponse);
+}

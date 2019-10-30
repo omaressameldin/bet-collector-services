@@ -1,0 +1,25 @@
+version: '3.2'
+services:
+  bets-user-proto-gen:
+    image: omaressameldin/proto-gen
+    environment:
+      - BUILD_PATH=${PROTO_BUILD_PATH}
+      - OUTPUT_PATH=${PROTO_OUTPUT_PATH}
+      - FILENAME=${USER_SERVICE_PROTO_FILENAME}
+    volumes:
+      - type: bind
+        target: ${PROTO_OUTPUT_PATH}
+        source: ${USER_SERVICE_PATH}${PROTO_OUTPUT_PATH}
+      - type: bind
+        target: ${PROTO_BUILD_PATH}
+        source: ${USER_SERVICE_PROTO_BUILD_PATH}
+  bets-user-server:
+    build:
+      context: ./grpc-services/.
+      args:
+        - FIREBASE_CONFIG=${FIREBASE_CONFIG}
+        - APP_SRC=${USER_SERVICE_SRC}
+        - PORT=${USER_SERVICE_PORT}
+        - COLLECTION=${USER_SERVICE_COLLECTION}
+    ports:
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
