@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 
+	db "github.com/omaressameldin/bet-collector-services/grpc-services/user/internal/db/v1"
 	v1 "github.com/omaressameldin/bet-collector-services/grpc-services/user/pkg/api/v1"
 	"github.com/omaressameldin/go-database-connector/app/pkg/database"
 
@@ -47,8 +48,12 @@ func (s *UserServiceServer) Create(ctx context.Context, req *v1.CreateRequest) (
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-
-	return nil, nil
+	if err := db.CreateUser(s.connector, req.User.AuthId, req.User); err != nil {
+		return nil, status.Error(codes.Unknown, "failed to inssert into User->"+err.Error())
+	}
+	return &v1.CreateResponse{
+		Api: apiVersion,
+	}, nil
 }
 
 // Read user data
@@ -56,8 +61,13 @@ func (s *UserServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-
-	return nil, nil
+	user, err := db.ReadUser(s.connector, req.AuthId)
+	if err != nil {
+		return nil, err
+	}
+	return &v1.ReadResponse{
+		User: user,
+	}, nil
 }
 
 // Update User
@@ -65,8 +75,12 @@ func (s *UserServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-
-	return nil, nil
+	if err := db.UpdateUser(s.connector, req.AuthId, req.User); err != nil {
+		return nil, err
+	}
+	return &v1.UpdateResponse{
+		Api: apiVersion,
+	}, nil
 }
 
 // Delete User
@@ -74,6 +88,10 @@ func (s *UserServiceServer) Delete(ctx context.Context, req *v1.DeleteRequest) (
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-
-	return nil, nil
+	if err := db.DeleteUser(s.connector, req.AuthId); err != nil {
+		return nil, err
+	}
+	return &v1.DeleteResponse{
+		Api: apiVersion,
+	}, nil
 }
