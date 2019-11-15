@@ -29,5 +29,7 @@ services:
       dockerfile: ./graphql-api/Dockerfile
       args:
       - PROTO_DIR=${PROTO_DIR}
+      - USER_GRPC_SERVICE_PORT=${USER_SERVICE_PORT}
+      - GRAPHQL_API_PORT=${GRAPHQL_API_PORT}
     ports:
-      - "${GRAPHQL_API_PORT}:8080"
+      - "${GRAPHQL_API_PORT}:${GRAPHQL_API_PORT}"

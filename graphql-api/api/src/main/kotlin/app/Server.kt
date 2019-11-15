@@ -7,7 +7,7 @@ class Server {
     private var graphql = GraphQLServer()
 
     fun start() {
-        val port = 8080
+        var port: Int = System.getenv("GRAPHQL_API_PORT").toInt()
 
         graphql.start(port)
     }

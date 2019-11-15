@@ -7,7 +7,8 @@ import io.grpc.ManagedChannelBuilder
 class UserClientModule : AbstractModule() {
 
     override fun configure() {
-        val channel = ManagedChannelBuilder.forAddress("bets-user-server", 7500).usePlaintext(true).build()
+        var userGrpcServicePort: Int = System.getenv("USER_GRPC_SERVICE_PORT").toInt()
+        val channel = ManagedChannelBuilder.forAddress("bets-user-server", userGrpcServicePort).usePlaintext(true).build()
         bind(UserServiceGrpc.UserServiceFutureStub::class.java).toInstance(UserServiceGrpc.newFutureStub(channel))
         bind(UserServiceGrpc.UserServiceBlockingStub::class.java).toInstance(UserServiceGrpc.newBlockingStub(channel))
     }
