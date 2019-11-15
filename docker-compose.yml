@@ -23,3 +23,11 @@ services:
         - COLLECTION=${USER_SERVICE_COLLECTION}
     ports:
       - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+  graphql-api:
+    build:
+      context: .
+      dockerfile: ./graphql-api/Dockerfile
+      args:
+      - PROTO_DIR=${PROTO_DIR}
+    ports:
+      - "${GRAPHQL_API_PORT}:8080"
