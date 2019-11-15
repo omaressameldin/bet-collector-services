@@ -1,0 +1,18 @@
+FROM gradle
+ARG WORKDIR=/usr/src/app/api
+ARG PROTO_DIR
+ARG USER_GRPC_SERVICE_PORT
+ENV USER_GRPC_SERVICE_PORT $USER_GRPC_SERVICE_PORT
+ARG GRAPHQL_API_PORT
+ENV GRAPHQL_API_PORT $GRAPHQL_API_PORT
+
+WORKDIR $WORKDIR
+
+COPY ./graphql-api/api/. ./.
+COPY ./graphql-api/grpc/. ./grpc/.
+COPY $PROTO_DIR/**/* ./grpc/src/main/proto/.
+RUN gradle & gradle wrapper
+
+EXPOSE $GRAPHQL_API_PORT
+
+CMD ./gradlew run
