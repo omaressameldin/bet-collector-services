@@ -10,7 +10,7 @@ WORKDIR $WORKDIR
 
 COPY ./graphql-api/api/. ./.
 COPY ./graphql-api/grpc/. ./grpc/.
-COPY $PROTO_DIR/**/* ./grpc/src/main/proto/.
+COPY $PROTO_DIR/**/* ./grpc/src/main/proto/
 RUN gradle & gradle wrapper
 
 EXPOSE $GRAPHQL_API_PORT
