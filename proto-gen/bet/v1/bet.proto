@@ -9,11 +9,11 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
 message Bet {
-    string id = 1 [json_name="authId"];
+    string id = 1 [json_name="Id"];
     string description = 2 [json_name="description"];
     string payment = 3 [json_name="payment"];
     string better_id = 4 [json_name="betterId"];
-    string accepter_id = 5 [json_name="accepter_id"];
+    string accepter_id = 5 [json_name="accepterId"];
     google.protobuf.Timestamp created_at = 6 [json_name="createdAt"];
     google.protobuf.Timestamp updated_at = 7 [json_name="updatedAt"];
 }
@@ -22,7 +22,7 @@ message Bet {
 message BetUpdate {
   google.protobuf.StringValue description = 1 [json_name="description"];
   google.protobuf.StringValue payment = 2 [json_name="payment"];
-  google.protobuf.StringValue accepter_id = 5 [json_name="accepter_id"];
+  google.protobuf.StringValue accepter_id = 5 [json_name="accepterId"];
   google.protobuf.Timestamp updated_at = 4 [json_name="updatedAt"];
 }
 
@@ -32,6 +32,7 @@ message CreateRequest{
 }
 message CreateResponse{
     string api = 1;
+    string id = 2;
 }
 
 message ReadRequest{
@@ -51,7 +52,7 @@ message ReadAllRequest{
 }
 message ReadAllResponse{
   string api = 1;
-  repeated Bet bet = 2;
+  repeated Bet bets = 2;
 }
 
 message UpdateRequest{
