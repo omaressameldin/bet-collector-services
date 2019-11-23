@@ -14,6 +14,8 @@ services:
         target: ${PROTO_BUILD_PATH}
         source: ${USER_SERVICE_PROTO_BUILD_PATH}
   user-server:
+    depends_on:
+      - user-proto-gen
     build:
       context: ./grpc-services/.
       args:
@@ -36,6 +38,16 @@ services:
       - type: bind
         target: ${PROTO_BUILD_PATH}
         source: ${BET_SERVICE_PROTO_BUILD_PATH}
+  bet-server:
+    depends_on:
+      - bet-proto-gen
+    build:
+      context: ./grpc-services/.
+      args:
+        - FIREBASE_CONFIG=${FIREBASE_CONFIG}
+        - APP_SRC=${BET_SERVICE_SRC}
+        - PORT=${BET_SERVICE_PORT}
+        - COLLECTION=${BET_SERVICE_COLLECTION}
   graphql-api:
     build:
       context: .
