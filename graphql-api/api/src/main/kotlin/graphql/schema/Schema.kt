@@ -13,7 +13,9 @@ object Schema {
             .createInjector(
                     SchemaProviderModule(),
                     UserClientModule(),
-                    UserSchemaModule()
+                    UserSchemaModule(),
+                    BetClientModule(),
+                    BetSchemaModule()
             )
             .getInstance(Key.get(GraphQLSchema::class.java, Schema::class.java))
 }

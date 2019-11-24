@@ -1,6 +1,6 @@
 version: '3.2'
 services:
-  bets-user-proto-gen:
+  user-proto-gen:
     image: omaressameldin/proto-gen
     environment:
       - BUILD_PATH=${PROTO_BUILD_PATH}
@@ -13,7 +13,9 @@ services:
       - type: bind
         target: ${PROTO_BUILD_PATH}
         source: ${USER_SERVICE_PROTO_BUILD_PATH}
-  bets-user-server:
+  user-server:
+    depends_on:
+      - user-proto-gen
     build:
       context: ./grpc-services/.
       args:
@@ -23,6 +25,29 @@ services:
         - COLLECTION=${USER_SERVICE_COLLECTION}
     ports:
       - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+  bet-proto-gen:
+    image: omaressameldin/proto-gen
+    environment:
+      - BUILD_PATH=${PROTO_BUILD_PATH}
+      - OUTPUT_PATH=${PROTO_OUTPUT_PATH}
+      - FILENAME=${BET_SERVICE_PROTO_FILENAME}
+    volumes:
+      - type: bind
+        target: ${PROTO_OUTPUT_PATH}
+        source: ${BET_SERVICE_PATH}${PROTO_OUTPUT_PATH}
+      - type: bind
+        target: ${PROTO_BUILD_PATH}
+        source: ${BET_SERVICE_PROTO_BUILD_PATH}
+  bet-server:
+    depends_on:
+      - bet-proto-gen
+    build:
+      context: ./grpc-services/.
+      args:
+        - FIREBASE_CONFIG=${FIREBASE_CONFIG}
+        - APP_SRC=${BET_SERVICE_SRC}
+        - PORT=${BET_SERVICE_PORT}
+        - COLLECTION=${BET_SERVICE_COLLECTION}
   graphql-api:
     build:
       context: .
@@ -30,6 +55,7 @@ services:
       args:
       - PROTO_DIR=${PROTO_DIR}
       - USER_GRPC_SERVICE_PORT=${USER_SERVICE_PORT}
+      - BET_GRPC_SERVICE_PORT=${BET_SERVICE_PORT}
       - GRAPHQL_API_PORT=${GRAPHQL_API_PORT}
     ports:
       - "${GRAPHQL_API_PORT}:${GRAPHQL_API_PORT}"

@@ -1,15 +1,14 @@
 ARG WORKDIR=/usr/src/app
 ARG BUILD_FILE=grpc-service
 
-FROM golang:1.12.4-alpine
+FROM golang:1.13-alpine
 ARG BUILD_FILE
 ARG WORKDIR
 ARG APP_SRC
 
 WORKDIR $WORKDIR
 
-COPY $APP_SRC/go.mod .
-COPY $APP_SRC/go.sum .
+COPY $APP_SRC/go.mod $APP_SRC/go.sum* ./
 
 RUN apk add git &&\
     apk --update add ca-certificates &&\
