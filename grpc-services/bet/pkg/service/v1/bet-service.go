@@ -94,7 +94,7 @@ func (s *BetServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (*
 		return nil, err
 	}
 
-	if err := db.UpdateBet(s.connector, req.Id, req.BetUpdate); err != nil {
+	if err := db.UpdateBet(s.connector, req.Id, req.BetterId, req.BetUpdate); err != nil {
 		return nil, err
 	}
 

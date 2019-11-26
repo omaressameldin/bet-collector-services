@@ -54,7 +54,15 @@ func validateUserId(userId string) error {
 	}
 }
 
-func validateBet(description, payment, accepterId, betterId *string) []database.Validator {
+func validateBetterIsNotAccepter(betterId, accepterId string) error {
+	if betterId == accepterId {
+		return fmt.Errorf("You can't bet yourself!")
+	}
+
+	return nil
+}
+
+func validateBet(betterId string, description, payment, accepterId *string) []database.Validator {
 	var descriptionError error
 	if description != nil {
 		descriptionError = validateDescription(*description)
@@ -66,20 +74,21 @@ func validateBet(description, payment, accepterId, betterId *string) []database.
 	}
 
 	var accepterError error
+	var accepterBetterError error
 	if accepterId != nil {
 		accepterError = validateUserId(*accepterId)
+		accepterBetterError = validateBetterIsNotAccepter(betterId, *accepterId)
 	}
 
-	var betterError error
-	if betterId != nil {
-		betterError = validateUserId(*betterId)
-	}
+	betterError := validateUserId(betterId)
 
 	return []database.Validator{
 		database.CreateValidator("Description", descriptionError),
 		database.CreateValidator("Payment", paymentError),
 		database.CreateValidator("AccepterId", accepterError),
 		database.CreateValidator("BetterId", betterError),
+		database.CreateValidator("AccepterId", accepterBetterError),
+		database.CreateValidator("BetterId", accepterBetterError),
 	}
 }
 
@@ -91,7 +100,7 @@ func CreateBet(connector database.Connector, bet *v1.Bet) error {
 	bet.UpdatedAt = bet.CreatedAt
 
 	return connector.Create(
-		validateBet(&bet.Description, &bet.Payment, &bet.AccepterId, &bet.BetterId),
+		validateBet(bet.BetterId, &bet.Description, &bet.Payment, &bet.AccepterId),
 		key,
 		bet,
 	)
@@ -150,16 +159,18 @@ func getUpdated(bet *v1.BetUpdate) []database.Updated {
 	if bet.Payment != nil {
 		updated = append(updated, database.Updated{Key: "Payment", Val: bet.Payment.Value})
 	}
+	if bet.AccepterId != nil {
+		updated = append(updated, database.Updated{Key: "AccepterId", Val: bet.AccepterId.Value})
+	}
 	updatedAt, _ := ptypes.TimestampProto(time.Now())
 	updated = append(updated, database.Updated{Key: "UpdatedAt", Val: updatedAt})
 
 	return updated
 }
 
-func UpdateBet(connector database.Connector, key string, bet *v1.BetUpdate) error {
+func UpdateBet(connector database.Connector, key string, betterId string, bet *v1.BetUpdate) error {
 	var description *string
 	var payment *string
-	var betterId *string
 	var accepterId *string
 
 	if bet.Description != nil {
@@ -175,7 +186,7 @@ func UpdateBet(connector database.Connector, key string, bet *v1.BetUpdate) erro
 	}
 
 	return connector.Update(
-		validateBet(description, payment, accepterId, betterId),
+		validateBet(betterId, description, payment, accepterId),
 		key,
 		getUpdated(bet),
 	)
