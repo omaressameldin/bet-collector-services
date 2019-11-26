@@ -35,9 +35,20 @@ message ReadRequest{
     string api = 1;
     string auth_id = 2;
 }
+
 message ReadResponse{
     string api = 1;
     User user = 2;
+}
+
+message DoesUserExistRequest{
+  string api = 1;
+  string auth_id = 2;
+}
+
+message DoesUserExistResponse{
+  string api = 1;
+  bool exists = 2;
 }
 
 message UpdateRequest{
@@ -60,6 +71,7 @@ message DeleteResponse{
 service UserService {
     rpc Create(CreateRequest) returns (CreateResponse);
     rpc Read(ReadRequest) returns (ReadResponse);
+    rpc DoesUserExist(DoesUserExistRequest) returns (DoesUserExistResponse);
     rpc Update(UpdateRequest) returns (UpdateResponse);
     rpc Delete(DeleteRequest) returns (DeleteResponse);
 }
