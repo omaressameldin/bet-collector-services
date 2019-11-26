@@ -173,6 +173,14 @@ func UpdateBet(connector database.Connector, key string, betterId string, bet *v
 	var payment *string
 	var accepterId *string
 
+	savedBet, err := ReadBet(connector, key)
+	if err != nil {
+		return err
+	}
+	if savedBet.BetterId != betterId {
+		return fmt.Errorf("You can only edit your own bets")
+	}
+
 	if bet.Description != nil {
 		description = &bet.Description.Value
 	}
