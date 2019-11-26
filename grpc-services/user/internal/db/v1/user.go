@@ -44,7 +44,7 @@ func CreateUser(connector database.Connector, key string, user *v1.User) error {
 	user.UpdatedAt = user.CreatedAt
 
 	return connector.Create(
-		validateUser(&user.Name, &user.Avatar),
+		validateUser(&user.Name, nil),
 		key,
 		user,
 	)
