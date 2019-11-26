@@ -58,7 +58,8 @@ message ReadAllResponse{
 message UpdateRequest{
     string api = 1;
     string id = 2;
-    BetUpdate BetUpdate = 3;
+    string better_id = 3;
+    BetUpdate BetUpdate = 4;
 }
 message UpdateResponse{
     string api = 1;
