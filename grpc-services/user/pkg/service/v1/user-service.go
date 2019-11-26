@@ -66,7 +66,28 @@ func (s *UserServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.
 		return nil, err
 	}
 	return &v1.ReadResponse{
+		Api: apiVersion,
 		User: user,
+	}, nil
+}
+
+func (s *UserServiceServer) DoesUserExist(
+	ctx context.Context,
+	req *v1.DoesUserExistRequest,
+) (*v1.DoesUserExistResponse, error) {
+	if err := s.checkAPI(req.Api); err != nil {
+		return nil, err
+	}
+	_, err := db.ReadUser(s.connector, req.AuthId)
+	if err != nil {
+		return &v1.DoesUserExistResponse{
+			Api: apiVersion,
+			Exists: false,
+		}, nil
+	}
+	return &v1.DoesUserExistResponse{
+		Api: apiVersion,
+		Exists: true,
 	}, nil
 }
 
