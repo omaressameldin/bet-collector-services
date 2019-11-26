@@ -1,14 +1,17 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	v1 "github.com/omaressameldin/bet-collector-services/grpc-services/bet/pkg/api/v1"
+	userService "github.com/omaressameldin/bet-collector-services/grpc-services/user/pkg/api/v1"
 	"github.com/omaressameldin/go-database-connector/app/pkg/database"
 	"github.com/rs/xid"
+	"google.golang.org/grpc"
 )
 
 const MIN_DESCRIPTION_LENGTH int = 10
@@ -30,18 +33,53 @@ func validatePayment(payment string) error {
 	return nil
 }
 
-func validateBet(description, payment *string) []database.Validator {
+func validateUserId(userId string) error {
+	client, err := grpc.Dial("user-server:7500", grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+
+	c := userService.NewUserServiceClient(client)
+	req := userService.DoesUserExistRequest{
+		Api:    "v1",
+		AuthId: userId,
+	}
+	res, err := c.DoesUserExist(context.Background(), &req)
+	if err != nil {
+		return err
+	} else if !res.Exists {
+		return fmt.Errorf("User with id %s does not exist!", userId)
+	} else {
+		return nil
+	}
+}
+
+func validateBet(description, payment, accepterId, betterId *string) []database.Validator {
 	var descriptionError error
-	descriptionError = validateDescription(*description)
+	if description != nil {
+		descriptionError = validateDescription(*description)
+	}
 
 	var paymentError error
 	if payment != nil {
 		paymentError = validatePayment(*payment)
 	}
 
+	var accepterError error
+	if accepterId != nil {
+		accepterError = validateUserId(*accepterId)
+	}
+
+	var betterError error
+	if betterId != nil {
+		betterError = validateUserId(*betterId)
+	}
+
 	return []database.Validator{
 		database.CreateValidator("Description", descriptionError),
 		database.CreateValidator("Payment", paymentError),
+		database.CreateValidator("AccepterId", accepterError),
+		database.CreateValidator("BetterId", betterError),
 	}
 }
 
@@ -53,7 +91,7 @@ func CreateBet(connector database.Connector, bet *v1.Bet) error {
 	bet.UpdatedAt = bet.CreatedAt
 
 	return connector.Create(
-		validateBet(&bet.Description, &bet.Payment),
+		validateBet(&bet.Description, &bet.Payment, &bet.AccepterId, &bet.BetterId),
 		key,
 		bet,
 	)
@@ -121,6 +159,8 @@ func getUpdated(bet *v1.BetUpdate) []database.Updated {
 func UpdateBet(connector database.Connector, key string, bet *v1.BetUpdate) error {
 	var description *string
 	var payment *string
+	var betterId *string
+	var accepterId *string
 
 	if bet.Description != nil {
 		description = &bet.Description.Value
@@ -130,8 +170,12 @@ func UpdateBet(connector database.Connector, key string, bet *v1.BetUpdate) erro
 		payment = &bet.Payment.Value
 	}
 
+	if bet.AccepterId != nil {
+		accepterId = &bet.AccepterId.Value
+	}
+
 	return connector.Update(
-		validateBet(description, payment),
+		validateBet(description, payment, accepterId, betterId),
 		key,
 		getUpdated(bet),
 	)
