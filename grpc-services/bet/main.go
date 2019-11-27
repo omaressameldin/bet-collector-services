@@ -5,16 +5,12 @@ import (
 	"os"
 
 	"github.com/omaressameldin/bet-collector-services/grpc-services/bet/cmd"
+	"github.com/omaressameldin/bet-collector-services/grpc-services/common/pkg/server"
 )
-
-func exitWithError(err error) {
-	fmt.Fprintf(os.Stderr, "%v\n", err)
-	os.Exit(1)
-}
 
 func close() {
 	if err := cmd.CloseServer(); err != nil {
-		exitWithError(err)
+		server.ExitWithError(err)
 	}
 }
 
@@ -22,6 +18,6 @@ func main() {
 	defer close()
 
 	if err := cmd.RunServer(); err != nil {
-		exitWithError(err)
+		server.ExitWithError(err)
 	}
 }
