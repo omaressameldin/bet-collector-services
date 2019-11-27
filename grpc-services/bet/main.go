@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/omaressameldin/bet-collector-services/grpc-services/bet/cmd"
 	"github.com/omaressameldin/bet-collector-services/grpc-services/common/pkg/server"
 )

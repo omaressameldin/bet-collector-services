@@ -80,6 +80,8 @@ github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORN
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
+github.com/omaressameldin/bet-collector-services/grpc-services/common v0.0.0-20191127142501-6c950822f8e7 h1:UoSyTstRWvoRDIVsxl6Bv0k2odY//4EEp/mKtQ4D0Ho=
+github.com/omaressameldin/bet-collector-services/grpc-services/common v0.0.0-20191127142501-6c950822f8e7/go.mod h1:5CfgyZKsQkqnaJRifX+qBE4PLujjZX9fsMQmUaE1iKw=
 github.com/omaressameldin/bet-collector-services/grpc-services/user v0.0.0-20191126122536-60a651b62bd7 h1:lGYonoJde23yug9cn2cPecxmsUXfU8MQ1R0Z8lfr/c0=
 github.com/omaressameldin/bet-collector-services/grpc-services/user v0.0.0-20191126122536-60a651b62bd7/go.mod h1:NhmxKC3nJ5miyb3VBCWvZ9BPJz0caRveTyL4wfvC0HQ=
 github.com/omaressameldin/go-database-connector/app v0.0.0-20191030104300-016d8084a783 h1:lOaTUHLt7PPFj2UotIrRSqZiweTdtJzI5bxxXSeSS0I=

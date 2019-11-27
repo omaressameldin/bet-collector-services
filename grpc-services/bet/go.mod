@@ -11,6 +11,7 @@ require (
 	github.com/golang/protobuf v1.3.2
 	github.com/google/go-cmp v0.3.1 // indirect
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
+	github.com/omaressameldin/bet-collector-services/grpc-services/common v0.0.0-20191127142501-6c950822f8e7
 	github.com/omaressameldin/bet-collector-services/grpc-services/user v0.0.0-20191126122536-60a651b62bd7
 	github.com/omaressameldin/go-database-connector/app v0.0.0-20191030104300-016d8084a783
 	github.com/rs/xid v1.2.1
@@ -25,5 +26,4 @@ require (
 	google.golang.org/genproto v0.0.0-20191115221424-83cc0476cb11 // indirect
 	google.golang.org/grpc v1.25.1
 	gopkg.in/yaml.v2 v2.2.7 // indirect
-	github.com/omaressameldin/bet-collector-services/grpc-services/common v0.0.0
 )
