@@ -48,6 +48,7 @@ services:
         - APP_SRC=${BET_SERVICE_SRC}
         - PORT=${BET_SERVICE_PORT}
         - COLLECTION=${BET_SERVICE_COLLECTION}
+        - DEPENDENCIES={"user-service":"user-server:${USER_SERVICE_PORT}"}
   graphql-api:
     build:
       context: .
