@@ -1,10 +1,9 @@
 package cmd
 
 import (
-	commonCmd "github.com/omaressameldin/bet-collector-services/grpc-services/common/pkg/cmd"
-
 	v1 "github.com/omaressameldin/bet-collector-services/grpc-services/bet/pkg/service/v1"
 	"github.com/omaressameldin/bet-collector-services/grpc-services/bet/server"
+	commonCmd "github.com/omaressameldin/bet-collector-services/grpc-services/common/pkg/cmd"
 )
 
 var v1API *v1.BetServiceServer
@@ -17,7 +16,7 @@ func RunServer() error {
 	}
 
 	connector := commonCmd.InitFirebaseConnector(cfg.FirebaseConfig, cfg.Collection)
-	v1API = v1.NewBetServiceServer(connector)
+	v1API = v1.NewBetServiceServer(connector, cfg.Dependencies)
 
 	return server.RunServer(ctx, v1API, cfg.Port)
 }

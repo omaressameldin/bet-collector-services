@@ -14,10 +14,14 @@ import (
 	"google.golang.org/grpc"
 )
 
-const MIN_DESCRIPTION_LENGTH int = 10
-const MIN_PAYMENT_LENGTH int = 2
-const DEFAULT_ALL_LIMIT int32 = 15
-const DEFAULT_PAGE int32 = 1
+
+const (
+	MIN_DESCRIPTION_LENGTH int = 10
+	MIN_PAYMENT_LENGTH int = 2
+	DEFAULT_ALL_LIMIT int32 = 15
+	DEFAULT_PAGE int32 = 1
+	USER_SERVICE = "user-service"
+)
 
 func validateDescription(description string) error {
 	if len(description) <= MIN_DESCRIPTION_LENGTH {
@@ -27,14 +31,14 @@ func validateDescription(description string) error {
 }
 
 func validatePayment(payment string) error {
-	if len(payment) <= MIN_PAYMENT_LENGTH {
+	if len(payment) < MIN_PAYMENT_LENGTH {
 		return fmt.Errorf("length should be at least %d", MIN_PAYMENT_LENGTH)
 	}
 	return nil
 }
 
-func validateUserId(userId string) error {
-	client, err := grpc.Dial("user-server:7500", grpc.WithInsecure())
+func validateUserId(userServiceUrl, userId string) error {
+	client, err := grpc.Dial(userServiceUrl, grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
@@ -62,7 +66,13 @@ func validateBetterIsNotAccepter(betterId, accepterId string) error {
 	return nil
 }
 
-func validateBet(betterId string, description, payment, accepterId *string) []database.Validator {
+func validateBet(
+	userServiceUrl string,
+	betterId string,
+	description,
+	payment,
+	accepterId *string,
+) []database.Validator {
 	var descriptionError error
 	if description != nil {
 		descriptionError = validateDescription(*description)
@@ -76,11 +86,11 @@ func validateBet(betterId string, description, payment, accepterId *string) []da
 	var accepterError error
 	var accepterBetterError error
 	if accepterId != nil {
-		accepterError = validateUserId(*accepterId)
+		accepterError = validateUserId(userServiceUrl, *accepterId)
 		accepterBetterError = validateBetterIsNotAccepter(betterId, *accepterId)
 	}
 
-	betterError := validateUserId(betterId)
+	betterError := validateUserId(userServiceUrl, betterId)
 
 	return []database.Validator{
 		database.CreateValidator("Description", descriptionError),
@@ -92,7 +102,11 @@ func validateBet(betterId string, description, payment, accepterId *string) []da
 	}
 }
 
-func CreateBet(connector database.Connector, bet *v1.Bet) error {
+func CreateBet(
+	connector database.Connector,
+	dependencies map[string]string,
+	bet *v1.Bet,
+) error {
 	bet.CreatedAt, _ = ptypes.TimestampProto(time.Now())
 	key := xid.New().String()
 	bet.Id = key
@@ -100,13 +114,17 @@ func CreateBet(connector database.Connector, bet *v1.Bet) error {
 	bet.UpdatedAt = bet.CreatedAt
 
 	return connector.Create(
-		validateBet(bet.BetterId, &bet.Description, &bet.Payment, &bet.AccepterId),
+		validateBet(dependencies[USER_SERVICE], bet.BetterId, &bet.Description, &bet.Payment, &bet.AccepterId),
 		key,
 		bet,
 	)
 }
 
-func ReadBet(connector database.Connector, key string) (*v1.Bet, error) {
+func ReadBet(
+	connector database.Connector,
+	dependencies map[string]string,
+	key string,
+) (*v1.Bet, error) {
 	var bet v1.Bet
 	if err := connector.Read(key, &bet); err != nil {
 		return nil, err
@@ -117,6 +135,7 @@ func ReadBet(connector database.Connector, key string) (*v1.Bet, error) {
 
 func ReadAllBets(
 	connector database.Connector,
+	dependencies map[string]string,
 	limit int32,
 	page int32,
 	userId string,
@@ -168,12 +187,18 @@ func getUpdated(bet *v1.BetUpdate) []database.Updated {
 	return updated
 }
 
-func UpdateBet(connector database.Connector, key string, betterId string, bet *v1.BetUpdate) error {
+func UpdateBet(
+	connector database.Connector,
+	dependencies map[string]string,
+	key string,
+	betterId string,
+	bet *v1.BetUpdate,
+) error {
 	var description *string
 	var payment *string
 	var accepterId *string
 
-	savedBet, err := ReadBet(connector, key)
+	savedBet, err := ReadBet(connector, dependencies, key)
 	if err != nil {
 		return err
 	}
@@ -194,13 +219,17 @@ func UpdateBet(connector database.Connector, key string, betterId string, bet *v
 	}
 
 	return connector.Update(
-		validateBet(betterId, description, payment, accepterId),
+		validateBet(dependencies[USER_SERVICE], betterId, description, payment, accepterId),
 		key,
 		getUpdated(bet),
 	)
 }
 
-func DeleteBet(connector database.Connector, key string) error {
+func DeleteBet(
+	connector database.Connector,
+	dependencies map[string]string,
+	key string,
+) error {
 	if err := connector.Delete(key); err != nil {
 		return err
 	}

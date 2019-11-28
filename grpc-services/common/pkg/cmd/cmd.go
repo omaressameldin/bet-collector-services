@@ -61,7 +61,6 @@ func InitFirebaseConnector(firebaseConfig, collection string) database.Connector
 }
 
 func unmarshalDependencies(dependenciesJson string, dependencies *map[string]string) error {
-	fmt.Println(dependenciesJson)
 	err := json.Unmarshal([]byte(dependenciesJson), dependencies)
 	if err != nil {
 		return err
