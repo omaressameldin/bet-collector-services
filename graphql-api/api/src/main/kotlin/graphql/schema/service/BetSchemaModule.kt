@@ -16,7 +16,7 @@ class BetSchemaModule : SchemaModule() {
   @SchemaModification(addField = "better", onType = Bet::class)
   fun betterToUser(bet: Bet, client: UserServiceGrpc.UserServiceFutureStub): ListenableFuture<User> {
     return UserSchemaModule().readUser(
-      UserReadRequest.newBuilder().setAuthId(bet.betterId).build(),
+      UserReadRequest.newBuilder().setId(bet.betterId).build(),
       client
     )
   }
@@ -24,7 +24,7 @@ class BetSchemaModule : SchemaModule() {
   @SchemaModification(addField = "accepter", onType = Bet::class)
   fun accepterToUser(bet: Bet, client: UserServiceGrpc.UserServiceFutureStub): ListenableFuture<User> {
     return UserSchemaModule().readUser(
-      UserReadRequest.newBuilder().setAuthId(bet.accepterId).build(),
+      UserReadRequest.newBuilder().setId(bet.accepterId).build(),
       client
     )
   }

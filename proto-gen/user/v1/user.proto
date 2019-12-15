@@ -9,7 +9,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
 message User {
-    string auth_id = 1 [json_name="authId"];
+    string id = 1 [json_name="id"];
     string name = 2 [json_name="name"];
     string avatar = 3 [json_name="avatar"];
     google.protobuf.Timestamp created_at = 4 [json_name="createdAt"];
@@ -33,7 +33,7 @@ message CreateResponse{
 
 message ReadRequest{
     string api = 1;
-    string auth_id = 2;
+    string id = 2;
 }
 
 message ReadResponse{
@@ -43,7 +43,7 @@ message ReadResponse{
 
 message DoesUserExistRequest{
   string api = 1;
-  string auth_id = 2;
+  string id = 2;
 }
 
 message DoesUserExistResponse{
@@ -53,7 +53,7 @@ message DoesUserExistResponse{
 
 message UpdateRequest{
     string api = 1;
-    string auth_id = 2;
+    string id = 2;
     UserUpdate user = 3;
 }
 message UpdateResponse{
@@ -62,7 +62,7 @@ message UpdateResponse{
 
 message DeleteRequest{
     string api = 1;
-    string auth_id = 2;
+    string id = 2;
 }
 message DeleteResponse{
     string api = 1;
