@@ -86,6 +86,8 @@ github.com/omaressameldin/bet-collector-services/grpc-services/common v0.0.0-201
 github.com/omaressameldin/bet-collector-services/grpc-services/common v0.0.0-20191128144702-4c31b2399022/go.mod h1:5CfgyZKsQkqnaJRifX+qBE4PLujjZX9fsMQmUaE1iKw=
 github.com/omaressameldin/go-database-connector/app v0.0.0-20191030104300-016d8084a783 h1:lOaTUHLt7PPFj2UotIrRSqZiweTdtJzI5bxxXSeSS0I=
 github.com/omaressameldin/go-database-connector/app v0.0.0-20191030104300-016d8084a783/go.mod h1:qgbYHFo9PSpdV6UGx5zJVZCdkKxbvDkIz9o38UlTI/M=
+github.com/omaressameldin/go-database-connector/app v0.0.0-20191215191453-ed2b2586ea61 h1:Kuv9sLieSprTfDMCIbZ7dlhOXVlIzKjTXxq6mgdhWlM=
+github.com/omaressameldin/go-database-connector/app v0.0.0-20191215191453-ed2b2586ea61/go.mod h1:puNhzwwNI0fcIX+WqmZQdVgjpKcerYNE056F+TRHDBY=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=

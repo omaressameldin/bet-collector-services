@@ -13,7 +13,7 @@ require (
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
 	github.com/omaressameldin/bet-collector-services/grpc-services/common v0.0.0-20191128144702-4c31b2399022
 	github.com/omaressameldin/bet-collector-services/grpc-services/user v0.0.0-20191128144702-4c31b2399022
-	github.com/omaressameldin/go-database-connector/app v0.0.0-20191030104300-016d8084a783
+	github.com/omaressameldin/go-database-connector/app v0.0.0-20191215191453-ed2b2586ea61
 	github.com/rs/xid v1.2.1
 	github.com/stretchr/objx v0.2.0 // indirect
 	go.opencensus.io v0.22.2 // indirect
