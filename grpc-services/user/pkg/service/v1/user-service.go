@@ -78,16 +78,10 @@ func (s *UserServiceServer) DoesUserExist(
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-	_, err := db.ReadUser(s.connector, req.Id)
-	if err != nil {
-		return &v1.DoesUserExistResponse{
-			Api: apiVersion,
-			Exists: false,
-		}, nil
-	}
+
 	return &v1.DoesUserExistResponse{
 		Api: apiVersion,
-		Exists: true,
+		Exists: db.DoesUserExist(s.connector, req.Id),
 	}, nil
 }
 
