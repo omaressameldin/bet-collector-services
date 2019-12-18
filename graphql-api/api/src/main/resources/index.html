@@ -20,10 +20,53 @@
 <body>
 <div id="graphiql">Loading GraphiQL...</div>
 <script>
-    const query = `{
-  sayHello(input: {name: "world"}) {
-    message
+    const query = `# mutation{
+# 	createBet(input: {
+#     api:"v1",
+#     bet: {
+#       description: "Haneen will get married last",
+#       payment: "10$",
+#       better_id: "bnr309kjvh7adm37rgjg",
+#       accepter_id: "bnr31scjvh7adm37rgk0"
+#     }
+#   }) {
+# 	  id
+# 	}
+# }
+
+# query{
+#   readBet(input: {
+#     api:"v1",
+#     id: "bnr336ha6v71flbqvfj0"
+#   }){
+# 		bet {
+#       description
+#     }
+#   }
+# }
+# query{
+#   readAllBets(input: {
+#     api: "v1",
+#     limit: -1,
+#     page: -1,
+#     user_id: "bnr31scjvh7adm37rgk0"
+#   }){
+#     api
+#     bets {
+#       id,
+#       payment
+#     }
+#   }
+# }
+
+mutation{
+  loginUser(input: {
+    api: "v1",
+    auth_id: "eyJhbGciOiJSUzI1NiIsImtpZCI6ImQ1OThkYjVjZjE1ZWNhOTI0OWJhZTUzMDYzOWVkYzUzNmMzYzViYjUiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiT21hciBFc3NhbSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS0vQUF1RTdtQ3ZuZW9XV1FKTFJXNEtUUkd3UE0teEIzWFdJNVh1QVM1TnhfSjZKZz1zOTYtYyIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9iZXQtY29sbGVjdG9yIiwiYXVkIjoiYmV0LWNvbGxlY3RvciIsImF1dGhfdGltZSI6MTU3NjQ0NDgxNywidXNlcl9pZCI6IlMyYTY0bUp4ZktTYW9BdUhSejhxNTFIa240NTMiLCJzdWIiOiJTMmE2NG1KeGZLU2FvQXVIUno4cTUxSGtuNDUzIiwiaWF0IjoxNTc2NDQ0ODE3LCJleHAiOjE1NzY0NDg0MTcsImVtYWlsIjoiby5lc3NhbWVsZGluQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTEzMDExNTgwMTY5NTA1MDgzNjk3Il0sImVtYWlsIjpbIm8uZXNzYW1lbGRpbkBnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJnb29nbGUuY29tIn19.OXYraDJ7reWstuGS9yYQ2b0Rt35sc3ruvylIvvYFc7h3FA-S4iGJ0aC-pSMZ_B1dQUQ7tJRCXv80v-sTIqdJ263zXiv7K1Lc5ob5hi4HLvhAmvacbfj-Y986YnsSVKROC-WFF-VeBSufv3ohcTPV8Bv3aqolFQgBie1qIS2p7hY9ml3lCdQWljTJ-ZSPmOcpSKtYSoc2sUtF_4idXuQBe0C6oQWmxAt"
+  }){
+    api
   }
+}
 }`;
     function fetcher(graphQLParams) {
       return fetch('/graphql', {
