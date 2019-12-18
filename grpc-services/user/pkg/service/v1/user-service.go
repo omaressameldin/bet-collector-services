@@ -43,16 +43,30 @@ func (s *UserServiceServer) checkAPI(api string) error {
 	return nil
 }
 
-// Create new user
-func (s *UserServiceServer) Create(ctx context.Context, req *v1.CreateRequest) (*v1.CreateResponse, error) {
+// Login user login through google sign in
+func (s *UserServiceServer) Login(ctx context.Context, req *v1.LoginRequest) (*v1.LoginResponse, error) {
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-	if err := db.CreateUser(s.connector, req.User.AuthId, req.User); err != nil {
-		return nil, status.Error(codes.Unknown, "failed to inssert into User->"+err.Error())
+
+	user, err := db.CreateUserFromAuthId(s.connector, req.AuthId)
+	if err != nil {
+		return nil, err
 	}
-	return &v1.CreateResponse{
-		Api: apiVersion,
+
+	users, err := db.FindUsersBy(s.connector, db.Filters{Email: &user.Email})
+	if len(users) > 0 {
+		user = users[0]
+	} else {
+		err = db.CreateUser(s.connector, user)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &v1.LoginResponse{
+		Api:  req.Api,
+		User: user,
 	}, nil
 }
 
@@ -61,12 +75,12 @@ func (s *UserServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-	user, err := db.ReadUser(s.connector, req.AuthId)
+	user, err := db.ReadUser(s.connector, req.Id)
 	if err != nil {
 		return nil, err
 	}
 	return &v1.ReadResponse{
-		Api: apiVersion,
+		Api:  apiVersion,
 		User: user,
 	}, nil
 }
@@ -78,16 +92,13 @@ func (s *UserServiceServer) DoesUserExist(
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-	_, err := db.ReadUser(s.connector, req.AuthId)
+	users, err := db.FindUsersBy(s.connector, db.Filters{ID: &req.Id})
 	if err != nil {
-		return &v1.DoesUserExistResponse{
-			Api: apiVersion,
-			Exists: false,
-		}, nil
+		return nil, err
 	}
 	return &v1.DoesUserExistResponse{
-		Api: apiVersion,
-		Exists: true,
+		Api:    apiVersion,
+		Exists: len(users) > 0,
 	}, nil
 }
 
@@ -96,7 +107,7 @@ func (s *UserServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-	if err := db.UpdateUser(s.connector, req.AuthId, req.User); err != nil {
+	if err := db.UpdateUser(s.connector, req.Id, req.User); err != nil {
 		return nil, err
 	}
 	return &v1.UpdateResponse{
@@ -109,7 +120,7 @@ func (s *UserServiceServer) Delete(ctx context.Context, req *v1.DeleteRequest) (
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-	if err := db.DeleteUser(s.connector, req.AuthId); err != nil {
+	if err := db.DeleteUser(s.connector, req.Id); err != nil {
 		return nil, err
 	}
 	return &v1.DeleteResponse{

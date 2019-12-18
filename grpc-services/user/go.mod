@@ -10,10 +10,10 @@ require (
 	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
 	github.com/golang/protobuf v1.3.2
 	github.com/google/go-cmp v0.3.1 // indirect
-	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
 	github.com/omaressameldin/bet-collector-services/grpc-services/common v0.0.0-20191128144702-4c31b2399022
-	github.com/omaressameldin/go-database-connector/app v0.0.0-20191030104300-016d8084a783
+	github.com/omaressameldin/go-database-connector/app v0.0.0-20191218141428-7bd86227cb80
+	github.com/rs/xid v1.2.1
 	github.com/stretchr/objx v0.2.0 // indirect
 	go.opencensus.io v0.22.2 // indirect
 	golang.org/x/exp v0.0.0-20191127035308-9964a5a80460 // indirect

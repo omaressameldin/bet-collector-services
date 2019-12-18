@@ -9,11 +9,12 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
 message User {
-    string auth_id = 1 [json_name="authId"];
-    string name = 2 [json_name="name"];
-    string avatar = 3 [json_name="avatar"];
-    google.protobuf.Timestamp created_at = 4 [json_name="createdAt"];
-    google.protobuf.Timestamp updated_at = 5 [json_name="updatedAt"];
+    string id = 1 [json_name="id"];
+    string email = 2 [json_name="email"];
+    string name = 3 [json_name="name"];
+    string avatar = 4 [json_name="avatar"];
+    google.protobuf.Timestamp created_at = 5 [json_name="createdAt"];
+    google.protobuf.Timestamp updated_at = 6 [json_name="updatedAt"];
 }
 
 
@@ -23,17 +24,18 @@ message UserUpdate {
   google.protobuf.Timestamp updated_at = 7 [json_name="updatedAt"];
 }
 
-message CreateRequest{
+message LoginRequest{
+    string api = 1;
+    string auth_id = 2;
+}
+message LoginResponse{
     string api = 1;
     User user = 2;
-}
-message CreateResponse{
-    string api = 1;
 }
 
 message ReadRequest{
     string api = 1;
-    string auth_id = 2;
+    string id = 2;
 }
 
 message ReadResponse{
@@ -43,7 +45,7 @@ message ReadResponse{
 
 message DoesUserExistRequest{
   string api = 1;
-  string auth_id = 2;
+  string id = 2;
 }
 
 message DoesUserExistResponse{
@@ -53,7 +55,7 @@ message DoesUserExistResponse{
 
 message UpdateRequest{
     string api = 1;
-    string auth_id = 2;
+    string id = 2;
     UserUpdate user = 3;
 }
 message UpdateResponse{
@@ -62,14 +64,14 @@ message UpdateResponse{
 
 message DeleteRequest{
     string api = 1;
-    string auth_id = 2;
+    string id = 2;
 }
 message DeleteResponse{
     string api = 1;
 }
 
 service UserService {
-    rpc Create(CreateRequest) returns (CreateResponse);
+    rpc Login(LoginRequest) returns (LoginResponse);
     rpc Read(ReadRequest) returns (ReadResponse);
     rpc DoesUserExist(DoesUserExistRequest) returns (DoesUserExistResponse);
     rpc Update(UpdateRequest) returns (UpdateResponse);
