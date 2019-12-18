@@ -13,6 +13,11 @@ import (
 
 const MIN_NAME_LENGTH int = 3
 
+type Filters struct {
+	ID    *string
+	Email *string
+}
+
 func validateName(name string) error {
 	if len(name) <= MIN_NAME_LENGTH {
 		return fmt.Errorf("length should be at least %d", MIN_NAME_LENGTH)
@@ -65,6 +70,7 @@ func CreateUserFromAuthId(connector database.Connector, authId string) (*v1.User
 		Avatar: user.Avatar,
 	}, nil
 }
+
 func ReadUser(connector database.Connector, key string) (*v1.User, error) {
 	var user v1.User
 	if err := connector.Read(key, &user); err != nil {
@@ -116,8 +122,34 @@ func DeleteUser(connector database.Connector, key string) error {
 	return nil
 }
 
-func DoesUserExist(connector database.Connector, id string) bool {
-	_, err := ReadUser(connector, id)
+func FindUsersBy(connector database.Connector, filters Filters) ([]*v1.User, error) {
+	userFilters := make([]database.Filter, 0)
+	if filters.ID != nil {
+		userFilters = append(userFilters, database.Filter{
+			Field:    "Id",
+			Operator: database.Equals,
+			Value:    *filters.ID,
+		})
+	}
+	if filters.Email != nil {
+		userFilters = append(userFilters, database.Filter{
+			Field:    "Email",
+			Operator: database.Equals,
+			Value:    *filters.Email,
+		})
+	}
 
-	return err == nil
+	users := make([]*v1.User, 0)
+	getRefFn := func() interface{} { return &v1.User{} }
+	appendFn := func(user interface{}) {
+		if user, ok := user.(*v1.User); ok {
+			users = append(users, user)
+		}
+	}
+	err := connector.ReadAll(getRefFn, appendFn, userFilters)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
