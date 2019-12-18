@@ -53,6 +53,18 @@ func CreateUser(connector database.Connector, user *v1.User) error {
 	)
 }
 
+func CreateUserFromAuthId(connector database.Connector, authId string) (*v1.User, error) {
+	user, err := connector.Authenticate(authId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.User{
+		Email:  user.Email,
+		Name:   user.Name,
+		Avatar: user.Avatar,
+	}, nil
+}
 func ReadUser(connector database.Connector, key string) (*v1.User, error) {
 	var user v1.User
 	if err := connector.Read(key, &user); err != nil {
