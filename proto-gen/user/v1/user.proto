@@ -10,10 +10,11 @@ import "google/protobuf/wrappers.proto";
 
 message User {
     string id = 1 [json_name="id"];
-    string name = 2 [json_name="name"];
-    string avatar = 3 [json_name="avatar"];
-    google.protobuf.Timestamp created_at = 4 [json_name="createdAt"];
-    google.protobuf.Timestamp updated_at = 5 [json_name="updatedAt"];
+    string email = 2 [json_name="email"];
+    string name = 3 [json_name="name"];
+    string avatar = 4 [json_name="avatar"];
+    google.protobuf.Timestamp created_at = 5 [json_name="createdAt"];
+    google.protobuf.Timestamp updated_at = 6 [json_name="updatedAt"];
 }
 
 
@@ -23,12 +24,13 @@ message UserUpdate {
   google.protobuf.Timestamp updated_at = 7 [json_name="updatedAt"];
 }
 
-message CreateRequest{
+message LoginRequest{
+    string api = 1;
+    string auth_id = 2;
+}
+message LoginResponse{
     string api = 1;
     User user = 2;
-}
-message CreateResponse{
-    string api = 1;
 }
 
 message ReadRequest{
@@ -69,7 +71,7 @@ message DeleteResponse{
 }
 
 service UserService {
-    rpc Create(CreateRequest) returns (CreateResponse);
+    rpc Login(LoginRequest) returns (LoginResponse);
     rpc Read(ReadRequest) returns (ReadResponse);
     rpc DoesUserExist(DoesUserExistRequest) returns (DoesUserExistResponse);
     rpc Update(UpdateRequest) returns (UpdateResponse);
