@@ -18,7 +18,7 @@ class BetSchemaModule : SchemaModule() {
     return UserSchemaModule().readUser(
       UserReadRequest.newBuilder().setId(bet.betterId).build(),
       client
-    )
+    ).map { it.user }
   }
 
   @SchemaModification(addField = "accepter", onType = Bet::class)
@@ -26,15 +26,23 @@ class BetSchemaModule : SchemaModule() {
     return UserSchemaModule().readUser(
       UserReadRequest.newBuilder().setId(bet.accepterId).build(),
       client
-    )
+    ).map { it.user }
   }
 
     @Query("readBet")
     fun readBet(
       request: ReadRequest,
       client: BetServiceGrpc.BetServiceFutureStub
-      ): ListenableFuture<Bet> {
-        return client.read(request).map{ it.bet }
+      ): ListenableFuture<ReadResponse> {
+        return client.read(request)
+    }
+
+    @Query("readAllBets")
+    fun readAllBet(
+      request: ReadAllRequest,
+      client: BetServiceGrpc.BetServiceFutureStub
+      ): ListenableFuture<ReadAllResponse> {
+        return client.readAll(request)
     }
 
     @Mutation("createBet")

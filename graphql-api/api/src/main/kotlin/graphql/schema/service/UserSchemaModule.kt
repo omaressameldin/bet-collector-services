@@ -13,16 +13,16 @@ class UserSchemaModule : SchemaModule() {
     fun readUser(
       request: ReadRequest,
       client: UserServiceGrpc.UserServiceFutureStub
-      ): ListenableFuture<User> {
-        return client.read(request).map{ it.user }
+      ): ListenableFuture<ReadResponse> {
+        return client.read(request)
     }
 
-    @Mutation("createUser")
-    fun createUser(
-      request: CreateRequest,
+    @Mutation("loginUser")
+    fun loginUser(
+      request: LoginRequest,
       client: UserServiceGrpc.UserServiceFutureStub
-      ): ListenableFuture<CreateResponse> {
-        return client.create(request)
+      ): ListenableFuture<LoginResponse> {
+        return client.login(request)
       }
 
       @Mutation("updateUser")
