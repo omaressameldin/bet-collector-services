@@ -3,28 +3,18 @@ module github.com/omaressameldin/bet-collector-services/grpc-services/bet
 go 1.13
 
 require (
-	cloud.google.com/go v0.49.0 // indirect
-	cloud.google.com/go/firestore v1.1.0 // indirect
-	cloud.google.com/go/storage v1.4.0 // indirect
-	firebase.google.com/go v3.10.0+incompatible // indirect
-	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
+	cloud.google.com/go v0.50.0 // indirect
+	firebase.google.com/go v3.11.0+incompatible // indirect
 	github.com/golang/protobuf v1.3.2
-	github.com/google/go-cmp v0.3.1 // indirect
-	github.com/jstemmer/go-junit-report v0.9.1 // indirect
-	github.com/omaressameldin/bet-collector-services/grpc-services/common v0.0.0-20191128144702-4c31b2399022
-	github.com/omaressameldin/bet-collector-services/grpc-services/user v0.0.0-20191128144702-4c31b2399022
+	github.com/omaressameldin/bet-collector-services/grpc-services/common v0.0.0-20191218150458-66009373a06f
+	github.com/omaressameldin/bet-collector-services/grpc-services/user v0.0.0-20191218150458-66009373a06f
 	github.com/omaressameldin/go-database-connector/app v0.0.0-20191218141428-7bd86227cb80
 	github.com/rs/xid v1.2.1
-	github.com/stretchr/objx v0.2.0 // indirect
-	go.opencensus.io v0.22.2 // indirect
-	golang.org/x/exp v0.0.0-20191127035308-9964a5a80460 // indirect
-	golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f // indirect
-	golang.org/x/net v0.0.0-20191126235420-ef20fe5d7933 // indirect
-	golang.org/x/oauth2 v0.0.0-20191122200657-5d9234df094c // indirect
-	golang.org/x/sys v0.0.0-20191128015809-6d18c012aee9 // indirect
-	golang.org/x/tools v0.0.0-20191127201027-ecd32218bd7f // indirect
-	google.golang.org/appengine v1.6.5 // indirect
-	google.golang.org/genproto v0.0.0-20191115221424-83cc0476cb11 // indirect
-	google.golang.org/grpc v1.25.1
-	gopkg.in/yaml.v2 v2.2.7 // indirect
+	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
+	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6 // indirect
+	golang.org/x/sys v0.0.0-20191218084908-4a24b4065292 // indirect
+	golang.org/x/tools v0.0.0-20191219041853-979b82bfef62 // indirect
+	google.golang.org/api v0.15.0 // indirect
+	google.golang.org/genproto v0.0.0-20191216205247-b31c10ee225f // indirect
+	google.golang.org/grpc v1.26.0
 )
