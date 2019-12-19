@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"fmt"
 
 	db "github.com/omaressameldin/bet-collector-services/grpc-services/user/internal/db/v1"
 	v1 "github.com/omaressameldin/bet-collector-services/grpc-services/user/pkg/api/v1"
@@ -43,6 +44,14 @@ func (s *UserServiceServer) checkAPI(api string) error {
 	return nil
 }
 
+func (s *UserServiceServer) isAuthorizedtoEditUser(token string, id string) bool {
+	authUser, err := s.connector.Authenticate(token)
+	if err != nil {
+		return false
+	}
+	return authUser.ID == id
+}
+
 // Login user login through google sign in
 func (s *UserServiceServer) Login(ctx context.Context, req *v1.LoginRequest) (*v1.LoginResponse, error) {
 	if err := s.checkAPI(req.Api); err != nil {
@@ -75,6 +84,11 @@ func (s *UserServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
+
+	if _, err := s.connector.Authenticate(req.Token); err != nil {
+		return nil, err
+	}
+
 	user, err := db.ReadUser(s.connector, req.Id)
 	if err != nil {
 		return nil, err
@@ -107,6 +121,11 @@ func (s *UserServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
+
+	if !s.isAuthorizedtoEditUser(req.Token, req.Id) {
+		return nil, fmt.Errorf("UnAuthorized to change user")
+	}
+
 	if err := db.UpdateUser(s.connector, req.Id, req.User); err != nil {
 		return nil, err
 	}
@@ -120,6 +139,11 @@ func (s *UserServiceServer) Delete(ctx context.Context, req *v1.DeleteRequest) (
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
+
+	if !s.isAuthorizedtoEditUser(req.Token, req.Id) {
+		return nil, fmt.Errorf("UnAuthorized to change user")
+	}
+
 	if err := db.DeleteUser(s.connector, req.Id); err != nil {
 		return nil, err
 	}

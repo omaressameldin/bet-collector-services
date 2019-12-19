@@ -36,6 +36,7 @@ message LoginResponse{
 message ReadRequest{
     string api = 1;
     string id = 2;
+    string token = 3;
 }
 
 message ReadResponse{
@@ -57,6 +58,7 @@ message UpdateRequest{
     string api = 1;
     string id = 2;
     UserUpdate user = 3;
+    string token = 4;
 }
 message UpdateResponse{
     string api = 1;
@@ -65,6 +67,7 @@ message UpdateResponse{
 message DeleteRequest{
     string api = 1;
     string id = 2;
+    string token = 3;
 }
 message DeleteResponse{
     string api = 1;
