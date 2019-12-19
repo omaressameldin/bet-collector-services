@@ -17,7 +17,7 @@ const (
 
 // BetServiceServer is implementation of v1.betServiceServer proto interface
 type BetServiceServer struct {
-	connector database.Connector
+	connector    database.Connector
 	dependencies map[string]string
 }
 
@@ -27,7 +27,7 @@ func NewBetServiceServer(
 	dependencies map[string]string,
 ) *BetServiceServer {
 	return &BetServiceServer{
-		connector: connector,
+		connector:    connector,
 		dependencies: dependencies,
 	}
 }
@@ -53,7 +53,7 @@ func (s *BetServiceServer) Create(ctx context.Context, req *v1.CreateRequest) (*
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-	if err := db.CreateBet(s.connector, s.dependencies, req.Bet); err != nil {
+	if err := db.CreateBet(s.connector, s.dependencies, req.Token, req.Bet); err != nil {
 		return nil, err
 	}
 	return &v1.CreateResponse{
@@ -67,7 +67,7 @@ func (s *BetServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.R
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-	bet, err := db.ReadBet(s.connector, s.dependencies, req.Id)
+	bet, err := db.ReadBet(s.connector, s.dependencies, req.Id, req.Token)
 	if err != nil {
 		return nil, err
 	}
@@ -77,12 +77,13 @@ func (s *BetServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.R
 	}, nil
 }
 
+// ReadAll gets all bets of user
 func (s *BetServiceServer) ReadAll(ctx context.Context, req *v1.ReadAllRequest) (*v1.ReadAllResponse, error) {
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
 
-	bets, err := db.ReadAllBets(s.connector, s.dependencies, req.Limit, req.Page, req.UserId)
+	bets, err := db.ReadAllBets(s.connector, s.dependencies, req.Limit, req.Page, req.Token)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +100,7 @@ func (s *BetServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (*
 		return nil, err
 	}
 
-	if err := db.UpdateBet(s.connector, s.dependencies, req.Id, req.BetterId, req.BetUpdate); err != nil {
+	if err := db.UpdateBet(s.connector, s.dependencies, req.Id, req.Token, req.BetUpdate); err != nil {
 		return nil, err
 	}
 
@@ -114,7 +115,7 @@ func (s *BetServiceServer) Delete(ctx context.Context, req *v1.DeleteRequest) (*
 		return nil, err
 	}
 
-	if err := db.DeleteBet(s.connector, s.dependencies, req.Id); err != nil {
+	if err := db.DeleteBet(s.connector, s.dependencies, req.Id, req.Token); err != nil {
 		return nil, err
 	}
 
