@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"fmt"
 
 	db "github.com/omaressameldin/bet-collector-services/grpc-services/bet/internal/db/v1"
 	v1 "github.com/omaressameldin/bet-collector-services/grpc-services/bet/pkg/api/v1"
@@ -48,14 +49,35 @@ func (s *BetServiceServer) checkAPI(api string) error {
 	return nil
 }
 
+func (s *BetServiceServer) AuthorizeUser(token string, bet *v1.Bet) (*string, error) {
+	authErr := fmt.Errorf("Unauthorized to change Bet")
+	dbUser, err := s.connector.Authenticate(token)
+	if err != nil {
+		return nil, authErr
+	}
+
+	if dbUser.ID != bet.AccepterId && dbUser.ID != bet.BetterId {
+		return nil, authErr
+	}
+	return &dbUser.ID, nil
+
+}
+
 // Create new bet
 func (s *BetServiceServer) Create(ctx context.Context, req *v1.CreateRequest) (*v1.CreateResponse, error) {
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-	if err := db.CreateBet(s.connector, s.dependencies, req.Token, req.Bet); err != nil {
+
+	user, err := s.connector.Authenticate(req.Token)
+	if err != nil {
 		return nil, err
 	}
+
+	if err := db.CreateBet(s.connector, s.dependencies, user.ID, req.Bet); err != nil {
+		return nil, err
+	}
+
 	return &v1.CreateResponse{
 		Api: apiVersion,
 		Id:  req.Bet.Id,
@@ -67,10 +89,17 @@ func (s *BetServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.R
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
-	bet, err := db.ReadBet(s.connector, s.dependencies, req.Id, req.Token)
+
+	bet, err := db.ReadBet(s.connector, s.dependencies, req.Id)
 	if err != nil {
 		return nil, err
 	}
+
+	_, err = s.AuthorizeUser(req.Token, bet)
+	if err != nil {
+		return nil, err
+	}
+
 	return &v1.ReadResponse{
 		Api: apiVersion,
 		Bet: bet,
@@ -83,7 +112,12 @@ func (s *BetServiceServer) ReadAll(ctx context.Context, req *v1.ReadAllRequest) 
 		return nil, err
 	}
 
-	bets, err := db.ReadAllBets(s.connector, s.dependencies, req.Limit, req.Page, req.Token)
+	user, err := s.connector.Authenticate(req.Token)
+	if err != nil {
+		return nil, err
+	}
+
+	bets, err := db.ReadAllBets(s.connector, s.dependencies, user.ID, req.Limit, req.Page)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +134,17 @@ func (s *BetServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (*
 		return nil, err
 	}
 
-	if err := db.UpdateBet(s.connector, s.dependencies, req.Id, req.Token, req.BetUpdate); err != nil {
+	bet, err := db.ReadBet(s.connector, s.dependencies, req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	userID, err := s.AuthorizeUser(req.Token, bet)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := db.UpdateBet(s.connector, s.dependencies, req.Id, *userID, req.BetUpdate); err != nil {
 		return nil, err
 	}
 
@@ -115,7 +159,17 @@ func (s *BetServiceServer) Delete(ctx context.Context, req *v1.DeleteRequest) (*
 		return nil, err
 	}
 
-	if err := db.DeleteBet(s.connector, s.dependencies, req.Id, req.Token); err != nil {
+	bet, err := db.ReadBet(s.connector, s.dependencies, req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = s.AuthorizeUser(req.Token, bet)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := db.DeleteBet(s.connector, s.dependencies, req.Id); err != nil {
 		return nil, err
 	}
 

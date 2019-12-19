@@ -104,17 +104,13 @@ func validateBet(
 func CreateBet(
 	connector database.Connector,
 	dependencies map[string]string,
-	token string,
+	betterID string,
 	bet *v1.Bet,
 ) error {
-	dbUser, err := connector.Authenticate(token)
-	if err != nil {
-		return err
-	}
 	bet.CreatedAt, _ = ptypes.TimestampProto(time.Now())
 	key := xid.New().String()
 	bet.Id = key
-	bet.BetterId = dbUser.ID
+	bet.BetterId = betterID
 
 	bet.UpdatedAt = bet.CreatedAt
 
@@ -129,43 +125,28 @@ func ReadBet(
 	connector database.Connector,
 	dependencies map[string]string,
 	key string,
-	token string,
 ) (*v1.Bet, error) {
 	var bet v1.Bet
-	dbUser, err := connector.Authenticate(token)
-	if err != nil {
-		return nil, err
-	}
 
 	if err := connector.Read(key, &bet); err != nil {
 		return nil, err
 	}
 
-	if dbUser.ID == bet.AccepterId || dbUser.ID == bet.BetterId {
-		return &bet, nil
-	}
-
-	return nil, fmt.Errorf("You are not authorized to access that bet!")
-
+	return &bet, nil
 }
 
 func ReadAllBets(
 	connector database.Connector,
 	dependencies map[string]string,
+	userID string,
 	limit int32,
 	page int32,
-	token string,
 ) ([]*v1.Bet, error) {
-	dbUser, err := connector.Authenticate(token)
-	if err != nil {
-		return nil, err
-	}
-
 	bets := make([]*v1.Bet, 0)
 	getRefFn := func() interface{} { return &v1.Bet{} }
 	appendFn := func(bet interface{}) {
 		if bet, ok := bet.(*v1.Bet); ok {
-			if bet.AccepterId == dbUser.ID || bet.BetterId == dbUser.ID {
+			if bet.AccepterId == userID || bet.BetterId == userID {
 				bets = append(bets, bet)
 			}
 		}
@@ -212,21 +193,9 @@ func UpdateBet(
 	connector database.Connector,
 	dependencies map[string]string,
 	key string,
-	token string,
+	userID string,
 	bet *v1.BetUpdate,
 ) error {
-	dbUser, err := connector.Authenticate(token)
-	if err != nil {
-		return err
-	}
-	savedBet, err := ReadBet(connector, dependencies, key, token)
-	if err != nil {
-		return err
-	}
-	if savedBet.BetterId != dbUser.ID {
-		return fmt.Errorf("You can only edit your own bets")
-	}
-
 	var description *string
 	var payment *string
 	var accepterId *string
@@ -244,7 +213,7 @@ func UpdateBet(
 	}
 
 	return connector.Update(
-		validateBet(dependencies[USER_SERVICE], dbUser.ID, description, payment, accepterId),
+		validateBet(dependencies[USER_SERVICE], userID, description, payment, accepterId),
 		key,
 		getUpdated(bet),
 	)
@@ -254,19 +223,6 @@ func DeleteBet(
 	connector database.Connector,
 	dependencies map[string]string,
 	key string,
-	token string,
 ) error {
-	dbUser, err := connector.Authenticate(token)
-	if err != nil {
-		return err
-	}
-	savedBet, err := ReadBet(connector, dependencies, key, token)
-	if err != nil {
-		return err
-	}
-	if dbUser.ID != savedBet.AccepterId && dbUser.ID != savedBet.BetterId {
-		return fmt.Errorf("You are not authorized to delete this bet!")
-	}
-
 	return connector.Delete(key)
 }
