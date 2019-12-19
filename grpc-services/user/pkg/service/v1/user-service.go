@@ -85,10 +85,6 @@ func (s *UserServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.
 		return nil, err
 	}
 
-	if _, err := s.connector.Authenticate(req.Token); err != nil {
-		return nil, err
-	}
-
 	user, err := db.ReadUser(s.connector, req.Id)
 	if err != nil {
 		return nil, err

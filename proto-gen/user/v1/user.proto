@@ -36,7 +36,6 @@ message LoginResponse{
 message ReadRequest{
     string api = 1;
     string id = 2;
-    string token = 3;
 }
 
 message ReadResponse{
