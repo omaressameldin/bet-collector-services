@@ -8,7 +8,6 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	v1 "github.com/omaressameldin/bet-collector-services/grpc-services/user/pkg/api/v1"
 	"github.com/omaressameldin/go-database-connector/app/pkg/database"
-	"github.com/rs/xid"
 )
 
 const MIN_NAME_LENGTH int = 3
@@ -48,12 +47,10 @@ func validateUser(name, avatar *string) []database.Validator {
 func CreateUser(connector database.Connector, user *v1.User) error {
 	user.CreatedAt, _ = ptypes.TimestampProto(time.Now())
 	user.UpdatedAt = user.CreatedAt
-	key := xid.New().String()
-	user.Id = key
 
 	return connector.Create(
 		validateUser(&user.Name, nil),
-		key,
+		user.Id,
 		user,
 	)
 }
@@ -68,6 +65,7 @@ func CreateUserFromAuthId(connector database.Connector, authId string) (*v1.User
 		Email:  user.Email,
 		Name:   user.Name,
 		Avatar: user.Avatar,
+		Id:     user.ID,
 	}, nil
 }
 

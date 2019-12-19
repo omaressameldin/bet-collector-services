@@ -22,13 +22,14 @@ message Bet {
 message BetUpdate {
   google.protobuf.StringValue description = 1 [json_name="description"];
   google.protobuf.StringValue payment = 2 [json_name="payment"];
-  google.protobuf.StringValue accepter_id = 5 [json_name="accepterId"];
+  google.protobuf.StringValue accepter_id = 3 [json_name="accepterId"];
   google.protobuf.Timestamp updated_at = 4 [json_name="updatedAt"];
 }
 
 message CreateRequest{
     string api = 1;
     Bet bet = 2;
+    string token = 3;
 }
 message CreateResponse{
     string api = 1;
@@ -38,6 +39,7 @@ message CreateResponse{
 message ReadRequest{
     string api = 1;
     string id = 2;
+    string token = 3;
 }
 message ReadResponse{
     string api = 1;
@@ -46,7 +48,7 @@ message ReadResponse{
 
 message ReadAllRequest{
   string api = 1;
-  string user_id = 2;
+  string token = 2;
   int32 limit = 3;
   int32 page = 4;
 }
@@ -58,8 +60,8 @@ message ReadAllResponse{
 message UpdateRequest{
     string api = 1;
     string id = 2;
-    string better_id = 3;
-    BetUpdate BetUpdate = 4;
+    string token = 3;
+    BetUpdate betUpdate = 4;
 }
 message UpdateResponse{
     string api = 1;
@@ -68,6 +70,7 @@ message UpdateResponse{
 message DeleteRequest{
     string api = 1;
     string id = 2;
+    string token = 3;
 }
 message DeleteResponse{
     string api = 1;

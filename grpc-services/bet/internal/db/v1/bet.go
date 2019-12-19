@@ -14,13 +14,12 @@ import (
 	"google.golang.org/grpc"
 )
 
-
 const (
-	MIN_DESCRIPTION_LENGTH int = 10
-	MIN_PAYMENT_LENGTH int = 2
-	DEFAULT_ALL_LIMIT int32 = 15
-	DEFAULT_PAGE int32 = 1
-	USER_SERVICE = "user-service"
+	MIN_DESCRIPTION_LENGTH int   = 10
+	MIN_PAYMENT_LENGTH     int   = 2
+	DEFAULT_ALL_LIMIT      int32 = 15
+	DEFAULT_PAGE           int32 = 1
+	USER_SERVICE                 = "user-service"
 )
 
 func validateDescription(description string) error {
@@ -45,8 +44,8 @@ func validateUserId(userServiceUrl, userId string) error {
 
 	c := userService.NewUserServiceClient(client)
 	req := userService.DoesUserExistRequest{
-		Api:    "v1",
-		AuthId: userId,
+		Api: "v1",
+		Id:  userId,
 	}
 	res, err := c.DoesUserExist(context.Background(), &req)
 	if err != nil {
@@ -105,11 +104,13 @@ func validateBet(
 func CreateBet(
 	connector database.Connector,
 	dependencies map[string]string,
+	betterID string,
 	bet *v1.Bet,
 ) error {
 	bet.CreatedAt, _ = ptypes.TimestampProto(time.Now())
 	key := xid.New().String()
 	bet.Id = key
+	bet.BetterId = betterID
 
 	bet.UpdatedAt = bet.CreatedAt
 
@@ -126,6 +127,7 @@ func ReadBet(
 	key string,
 ) (*v1.Bet, error) {
 	var bet v1.Bet
+
 	if err := connector.Read(key, &bet); err != nil {
 		return nil, err
 	}
@@ -136,20 +138,20 @@ func ReadBet(
 func ReadAllBets(
 	connector database.Connector,
 	dependencies map[string]string,
+	userID string,
 	limit int32,
 	page int32,
-	userId string,
 ) ([]*v1.Bet, error) {
 	bets := make([]*v1.Bet, 0)
 	getRefFn := func() interface{} { return &v1.Bet{} }
 	appendFn := func(bet interface{}) {
 		if bet, ok := bet.(*v1.Bet); ok {
-			if bet.AccepterId == userId || bet.BetterId == userId {
+			if bet.AccepterId == userID || bet.BetterId == userID {
 				bets = append(bets, bet)
 			}
 		}
 	}
-	if err := connector.ReadAll(getRefFn, appendFn); err != nil {
+	if err := connector.ReadAll(getRefFn, appendFn, []database.Filter{}); err != nil {
 		return nil, err
 	}
 	pageLimit := DEFAULT_ALL_LIMIT
@@ -191,20 +193,12 @@ func UpdateBet(
 	connector database.Connector,
 	dependencies map[string]string,
 	key string,
-	betterId string,
+	userID string,
 	bet *v1.BetUpdate,
 ) error {
 	var description *string
 	var payment *string
 	var accepterId *string
-
-	savedBet, err := ReadBet(connector, dependencies, key)
-	if err != nil {
-		return err
-	}
-	if savedBet.BetterId != betterId {
-		return fmt.Errorf("You can only edit your own bets")
-	}
 
 	if bet.Description != nil {
 		description = &bet.Description.Value
@@ -219,7 +213,7 @@ func UpdateBet(
 	}
 
 	return connector.Update(
-		validateBet(dependencies[USER_SERVICE], betterId, description, payment, accepterId),
+		validateBet(dependencies[USER_SERVICE], userID, description, payment, accepterId),
 		key,
 		getUpdated(bet),
 	)
@@ -230,9 +224,5 @@ func DeleteBet(
 	dependencies map[string]string,
 	key string,
 ) error {
-	if err := connector.Delete(key); err != nil {
-		return err
-	}
-
-	return nil
+	return connector.Delete(key)
 }
