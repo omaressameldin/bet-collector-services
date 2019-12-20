@@ -95,6 +95,27 @@ func (s *UserServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.
 	}, nil
 }
 
+// ReadAll gets all users
+func (s *UserServiceServer) ReadAll(ctx context.Context, req *v1.ReadAllRequest) (*v1.ReadAllResponse, error) {
+	if err := s.checkAPI(req.Api); err != nil {
+		return nil, err
+	}
+
+	user, err := s.connector.Authenticate(req.Token)
+	if err != nil {
+		return nil, err
+	}
+
+	users, err := db.FindUsersBy(s.connector, db.Filters{ExcludeID: &user.ID})
+	if err != nil {
+		return nil, err
+	}
+	return &v1.ReadAllResponse{
+		Api:   apiVersion,
+		Users: users,
+	}, nil
+}
+
 func (s *UserServiceServer) DoesUserExist(
 	ctx context.Context,
 	req *v1.DoesUserExistRequest,
