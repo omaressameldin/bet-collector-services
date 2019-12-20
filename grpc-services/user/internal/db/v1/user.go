@@ -13,8 +13,9 @@ import (
 const MIN_NAME_LENGTH int = 3
 
 type Filters struct {
-	ID    *string
-	Email *string
+	ID        *string
+	Email     *string
+	ExcludeID *string
 }
 
 func validateName(name string) error {
@@ -127,6 +128,13 @@ func FindUsersBy(connector database.Connector, filters Filters) ([]*v1.User, err
 			Field:    "Id",
 			Operator: database.Equals,
 			Value:    *filters.ID,
+		})
+	}
+	if filters.ExcludeID != nil {
+		userFilters = append(userFilters, database.Filter{
+			Field:    "Id",
+			Operator: database.NotEquals,
+			Value:    *filters.ExcludeID,
 		})
 	}
 	if filters.Email != nil {
