@@ -130,13 +130,6 @@ func FindUsersBy(connector database.Connector, filters Filters) ([]*v1.User, err
 			Value:    *filters.ID,
 		})
 	}
-	if filters.ExcludeID != nil {
-		userFilters = append(userFilters, database.Filter{
-			Field:    "Id",
-			Operator: database.NotEquals,
-			Value:    *filters.ExcludeID,
-		})
-	}
 	if filters.Email != nil {
 		userFilters = append(userFilters, database.Filter{
 			Field:    "Email",
@@ -149,7 +142,10 @@ func FindUsersBy(connector database.Connector, filters Filters) ([]*v1.User, err
 	getRefFn := func() interface{} { return &v1.User{} }
 	appendFn := func(user interface{}) {
 		if user, ok := user.(*v1.User); ok {
-			users = append(users, user)
+
+			if filters.ExcludeID == nil || user.Id != *filters.ExcludeID {
+				users = append(users, user)
+			}
 		}
 	}
 	err := connector.ReadAll(getRefFn, appendFn, userFilters)
