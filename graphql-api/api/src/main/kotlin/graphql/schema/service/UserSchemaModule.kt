@@ -17,6 +17,14 @@ class UserSchemaModule : SchemaModule() {
         return client.read(request)
     }
 
+    @Query("readAllUsers")
+    fun readAllUsers(
+      request: ReadAllRequest,
+      client: UserServiceGrpc.UserServiceFutureStub
+      ): ListenableFuture<ReadAllResponse> {
+        return client.readAll(request)
+    }
+
     @Mutation("loginUser")
     fun loginUser(
       request: LoginRequest,
