@@ -14,8 +14,10 @@ message Bet {
     string payment = 3 [json_name="payment"];
     string better_id = 4 [json_name="betterId"];
     string accepter_id = 5 [json_name="accepterId"];
-    google.protobuf.Timestamp created_at = 6 [json_name="createdAt"];
-    google.protobuf.Timestamp updated_at = 7 [json_name="updatedAt"];
+    google.protobuf.Timestamp expiry_date = 6 [json_name="expiryDate"];
+    google.protobuf.Timestamp completion_date = 7 [json_name="completionDate"];
+    google.protobuf.Timestamp created_at = 8 [json_name="createdAt"];
+    google.protobuf.Timestamp updated_at = 9 [json_name="updatedAt"];
 }
 
 
@@ -23,7 +25,9 @@ message BetUpdate {
   google.protobuf.StringValue description = 1 [json_name="description"];
   google.protobuf.StringValue payment = 2 [json_name="payment"];
   google.protobuf.StringValue accepter_id = 3 [json_name="accepterId"];
-  google.protobuf.Timestamp updated_at = 4 [json_name="updatedAt"];
+  google.protobuf.Timestamp expiry_date = 4 [json_name="expiryDate"];
+    google.protobuf.Timestamp completion_date = 5 [json_name="completionDate"];
+  google.protobuf.Timestamp updated_at = 6 [json_name="updatedAt"];
 }
 
 message CreateRequest{
