@@ -90,6 +90,8 @@ github.com/omaressameldin/go-database-connector/app v0.0.0-20191218141428-7bd862
 github.com/omaressameldin/go-database-connector/app v0.0.0-20191218141428-7bd86227cb80/go.mod h1:puNhzwwNI0fcIX+WqmZQdVgjpKcerYNE056F+TRHDBY=
 github.com/omaressameldin/go-database-connector/app v0.0.0-20191220151516-f212d9662f5b h1:Cs+3bTKSLgpnAhNIK0uhztpbXRvcG4WDUa8Y6rBfIrM=
 github.com/omaressameldin/go-database-connector/app v0.0.0-20191220151516-f212d9662f5b/go.mod h1:puNhzwwNI0fcIX+WqmZQdVgjpKcerYNE056F+TRHDBY=
+github.com/omaressameldin/go-database-connector/app v0.0.0-20191220152802-b0ebe289385a h1:kfGsQk8pjULlc8taojGyXTbX4vxnXc77DvB8M+QwBnA=
+github.com/omaressameldin/go-database-connector/app v0.0.0-20191220152802-b0ebe289385a/go.mod h1:puNhzwwNI0fcIX+WqmZQdVgjpKcerYNE056F+TRHDBY=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=
