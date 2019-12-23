@@ -8,7 +8,7 @@ require (
 	github.com/golang/protobuf v1.3.2
 	github.com/omaressameldin/bet-collector-services/grpc-services/common v0.0.0-20191218150458-66009373a06f
 	github.com/omaressameldin/bet-collector-services/grpc-services/user v0.0.0-20191218150458-66009373a06f
-	github.com/omaressameldin/go-database-connector/app v0.0.0-20191218141428-7bd86227cb80
+	github.com/omaressameldin/go-database-connector/app v0.0.0-20191220152802-b0ebe289385a
 	github.com/rs/xid v1.2.1
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
 	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6 // indirect

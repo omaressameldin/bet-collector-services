@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	v1 "github.com/omaressameldin/bet-collector-services/grpc-services/bet/pkg/api/v1"
 	userService "github.com/omaressameldin/bet-collector-services/grpc-services/user/pkg/api/v1"
 	"github.com/omaressameldin/go-database-connector/app/pkg/database"
@@ -25,6 +26,17 @@ const (
 func validateDescription(description string) error {
 	if len(description) <= MIN_DESCRIPTION_LENGTH {
 		return fmt.Errorf("length should be at least %d", MIN_DESCRIPTION_LENGTH)
+	}
+	return nil
+}
+
+func validateExpiryDate(expiry *timestamp.Timestamp) error {
+	t, err := ptypes.Timestamp(expiry)
+	if err != nil {
+		return err
+	}
+	if t.Before(time.Now()) {
+		return fmt.Errorf("Expiry date has to be in the future")
 	}
 	return nil
 }
@@ -71,10 +83,16 @@ func validateBet(
 	description,
 	payment,
 	accepterId *string,
+	expiryDate *timestamp.Timestamp,
 ) []database.Validator {
 	var descriptionError error
 	if description != nil {
 		descriptionError = validateDescription(*description)
+	}
+
+	var expiryError error
+	if expiryDate != nil {
+		expiryError = validateExpiryDate(expiryDate)
 	}
 
 	var paymentError error
@@ -98,6 +116,7 @@ func validateBet(
 		database.CreateValidator("BetterId", betterError),
 		database.CreateValidator("AccepterId", accepterBetterError),
 		database.CreateValidator("BetterId", accepterBetterError),
+		database.CreateValidator("ExpiryDate", expiryError),
 	}
 }
 
@@ -108,14 +127,24 @@ func CreateBet(
 	bet *v1.Bet,
 ) error {
 	bet.CreatedAt, _ = ptypes.TimestampProto(time.Now())
+	bet.UpdatedAt = bet.CreatedAt
 	key := xid.New().String()
 	bet.Id = key
 	bet.BetterId = betterID
 
-	bet.UpdatedAt = bet.CreatedAt
+	if bet.ExpiryDate == nil {
+		bet.ExpiryDate = &timestamp.Timestamp{}
+	}
 
 	return connector.Create(
-		validateBet(dependencies[USER_SERVICE], bet.BetterId, &bet.Description, &bet.Payment, &bet.AccepterId),
+		validateBet(
+			dependencies[USER_SERVICE],
+			bet.BetterId,
+			&bet.Description,
+			&bet.Payment,
+			&bet.AccepterId,
+			bet.ExpiryDate,
+		),
 		key,
 		bet,
 	)
@@ -177,6 +206,14 @@ func getUpdated(bet *v1.BetUpdate) []database.Updated {
 		updated = append(updated, database.Updated{Key: "Description", Val: bet.Description.Value})
 	}
 
+	if bet.ExpiryDate != nil {
+		updated = append(updated, database.Updated{Key: "ExpiryDate", Val: bet.ExpiryDate})
+	}
+
+	if bet.CompletionDate != nil {
+		updated = append(updated, database.Updated{Key: "CompletionDate", Val: bet.CompletionDate})
+	}
+
 	if bet.Payment != nil {
 		updated = append(updated, database.Updated{Key: "Payment", Val: bet.Payment.Value})
 	}
@@ -213,7 +250,14 @@ func UpdateBet(
 	}
 
 	return connector.Update(
-		validateBet(dependencies[USER_SERVICE], userID, description, payment, accepterId),
+		validateBet(
+			dependencies[USER_SERVICE],
+			userID,
+			description,
+			payment,
+			accepterId,
+			bet.ExpiryDate,
+		),
 		key,
 		getUpdated(bet),
 	)
