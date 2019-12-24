@@ -22,7 +22,13 @@ class BetSchemaModule : SchemaModule() {
   }
 
   @SchemaModification(addField = "winner", onType = Bet::class)
-  fun winnerToUser(bet: Bet, client: UserServiceGrpc.UserServiceFutureStub): ListenableFuture<User> {
+  fun winnerToUser(bet: Bet, client: UserServiceGrpc.UserServiceFutureStub): ListenableFuture<User>? {
+
+
+    if (bet.winnerId?.value === "" || bet.winnerId?.value === null ) {
+      return null
+    }
+
     return UserSchemaModule().readUser(
       UserReadRequest.newBuilder().setId(bet.winnerId.value).build(),
       client
