@@ -103,7 +103,7 @@ func validateBet(
 	}
 
 	var winnerError error
-	if winnerId != nil {
+	if winnerId != nil && len(*winnerId) > 0 {
 		winnerError = validateUserId(userServiceUrl, *winnerId)
 
 		if completionDate == nil {
@@ -228,19 +228,30 @@ func getUpdated(bet *v1.BetUpdate) []database.Updated {
 		updated = append(updated, database.Updated{Key: "ExpiryDate", Val: bet.ExpiryDate})
 	}
 
-	if bet.CompletionDate != nil {
-		updated = append(updated, database.Updated{Key: "CompletionDate", Val: bet.CompletionDate})
-	}
-
 	if bet.Payment != nil {
 		updated = append(updated, database.Updated{Key: "Payment", Val: bet.Payment.Value})
 	}
+
 	if bet.AccepterId != nil {
 		updated = append(updated, database.Updated{Key: "AccepterId", Val: bet.AccepterId.Value})
 	}
+
+	shouldRemoveCompletedDate := false
 	if bet.WinnerId != nil {
-		updated = append(updated, database.Updated{Key: "WinnerId", Val: bet.WinnerId})
+		winnerId := bet.WinnerId
+		if len(winnerId.Value) == 0 {
+			winnerId = nil
+			shouldRemoveCompletedDate = true
+		}
+		updated = append(updated, database.Updated{Key: "WinnerId", Val: winnerId})
 	}
+
+	if shouldRemoveCompletedDate {
+		updated = append(updated, database.Updated{Key: "CompletionDate", Val: nil})
+	} else if bet.CompletionDate != nil {
+		updated = append(updated, database.Updated{Key: "CompletionDate", Val: bet.CompletionDate})
+	}
+
 	updatedAt, _ := ptypes.TimestampProto(time.Now())
 	updated = append(updated, database.Updated{Key: "UpdatedAt", Val: updatedAt})
 
