@@ -83,7 +83,9 @@ func validateBet(
 	description,
 	payment,
 	accepterId *string,
+	winnerId *string,
 	expiryDate *timestamp.Timestamp,
+	completionDate *timestamp.Timestamp,
 ) []database.Validator {
 	var descriptionError error
 	if description != nil {
@@ -98,6 +100,15 @@ func validateBet(
 	var paymentError error
 	if payment != nil {
 		paymentError = validatePayment(*payment)
+	}
+
+	var winnerError error
+	if winnerId != nil {
+		winnerError = validateUserId(userServiceUrl, *winnerId)
+
+		if completionDate == nil {
+			winnerError = fmt.Errorf("has to set completionDate with winner")
+		}
 	}
 
 	var accepterError error
@@ -117,6 +128,7 @@ func validateBet(
 		database.CreateValidator("AccepterId", accepterBetterError),
 		database.CreateValidator("BetterId", accepterBetterError),
 		database.CreateValidator("ExpiryDate", expiryError),
+		database.CreateValidator("winnerId", winnerError),
 	}
 }
 
@@ -131,11 +143,15 @@ func CreateBet(
 	key := xid.New().String()
 	bet.Id = key
 	bet.BetterId = betterID
+	var winnerId *string
 
 	if bet.ExpiryDate == nil {
 		bet.ExpiryDate = &timestamp.Timestamp{}
 	}
 
+	if bet.WinnerId != nil {
+		winnerId = &bet.WinnerId.Value
+	}
 	return connector.Create(
 		validateBet(
 			dependencies[USER_SERVICE],
@@ -143,7 +159,9 @@ func CreateBet(
 			&bet.Description,
 			&bet.Payment,
 			&bet.AccepterId,
+			winnerId,
 			bet.ExpiryDate,
+			bet.CompletionDate,
 		),
 		key,
 		bet,
@@ -220,6 +238,9 @@ func getUpdated(bet *v1.BetUpdate) []database.Updated {
 	if bet.AccepterId != nil {
 		updated = append(updated, database.Updated{Key: "AccepterId", Val: bet.AccepterId.Value})
 	}
+	if bet.WinnerId != nil {
+		updated = append(updated, database.Updated{Key: "WinnerId", Val: bet.WinnerId})
+	}
 	updatedAt, _ := ptypes.TimestampProto(time.Now())
 	updated = append(updated, database.Updated{Key: "UpdatedAt", Val: updatedAt})
 
@@ -236,6 +257,7 @@ func UpdateBet(
 	var description *string
 	var payment *string
 	var accepterId *string
+	var winnerId *string
 
 	if bet.Description != nil {
 		description = &bet.Description.Value
@@ -249,6 +271,10 @@ func UpdateBet(
 		accepterId = &bet.AccepterId.Value
 	}
 
+	if bet.WinnerId != nil {
+		winnerId = &bet.WinnerId.Value
+	}
+
 	return connector.Update(
 		validateBet(
 			dependencies[USER_SERVICE],
@@ -256,7 +282,9 @@ func UpdateBet(
 			description,
 			payment,
 			accepterId,
+			winnerId,
 			bet.ExpiryDate,
+			bet.CompletionDate,
 		),
 		key,
 		getUpdated(bet),

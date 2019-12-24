@@ -21,6 +21,14 @@ class BetSchemaModule : SchemaModule() {
     ).map { it.user }
   }
 
+  @SchemaModification(addField = "winner", onType = Bet::class)
+  fun winnerToUser(bet: Bet, client: UserServiceGrpc.UserServiceFutureStub): ListenableFuture<User> {
+    return UserSchemaModule().readUser(
+      UserReadRequest.newBuilder().setId(bet.winnerId.value).build(),
+      client
+    ).map { it.user }
+  }
+
   @SchemaModification(addField = "accepter", onType = Bet::class)
   fun accepterToUser(bet: Bet, client: UserServiceGrpc.UserServiceFutureStub): ListenableFuture<User> {
     return UserSchemaModule().readUser(
