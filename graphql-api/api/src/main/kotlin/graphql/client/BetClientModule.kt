@@ -8,7 +8,9 @@ class BetClientModule : AbstractModule() {
 
     override fun configure() {
         var betGrpcServicePort: Int = System.getenv("BET_GRPC_SERVICE_PORT").toInt()
-        val channel = ManagedChannelBuilder.forAddress("bet-server", betGrpcServicePort).usePlaintext(true).build()
+        var betGrpcService: String = System.getenv("BET_GRPC_SERVICE")
+
+        val channel = ManagedChannelBuilder.forAddress(betGrpcService, betGrpcServicePort).usePlaintext(true).build()
         bind(BetServiceGrpc.BetServiceFutureStub::class.java).toInstance(BetServiceGrpc.newFutureStub(channel))
         bind(BetServiceGrpc.BetServiceBlockingStub::class.java).toInstance(BetServiceGrpc.newBlockingStub(channel))
     }
