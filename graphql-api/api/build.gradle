@@ -24,6 +24,13 @@ plugins {
    id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'app.ServerKt'
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
 repositories {
     jcenter()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
