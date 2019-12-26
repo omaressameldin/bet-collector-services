@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bet-service
+spec:
+  selector:
+    matchLabels:
+      app: bet-service
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: bet-service
+        tier: backend
+    spec:
+      containers:
+        - name: bet-service
+          image: omaressameldin/bet-collector-bet:1.1
+          ports:
+            - containerPort: 7501
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "50m"
+            limits:
+              memory: "64Mi"
+              cpu: "50m"
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
