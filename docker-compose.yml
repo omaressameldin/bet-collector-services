@@ -56,7 +56,9 @@ services:
       args:
       - PROTO_DIR=${PROTO_DIR}
       - USER_GRPC_SERVICE_PORT=${USER_SERVICE_PORT}
+      - USER_GRPC_SERVICE=user-server
       - BET_GRPC_SERVICE_PORT=${BET_SERVICE_PORT}
+      - BET_GRPC_SERVICE=bet-server
       - GRAPHQL_API_PORT=${GRAPHQL_API_PORT}
     ports:
       - "${GRAPHQL_API_PORT}:${GRAPHQL_API_PORT}"
