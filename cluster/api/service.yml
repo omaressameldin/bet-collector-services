@@ -6,12 +6,10 @@ metadata:
     app: api
     tier: backend
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 8500
       targetPort: 8500
-  externalIPs:
-    - 192.168.39.69
   selector:
     app: api
     tier: backend
