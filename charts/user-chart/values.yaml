@@ -1,0 +1,13 @@
+deployment:
+  image: omaressameldin/bet-collector-user:1.0
+  port: 7500
+  nameSuffix: -dep
+  podSuffix: -pod
+service:
+  type: ClusterIP
+  port: 7500
+  nameSuffix: -svc
+autoscaler:
+  minReplicas: 1
+  maxReplicas: 10
+  nameSuffix: -scaler
