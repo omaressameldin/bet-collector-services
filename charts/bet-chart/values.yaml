@@ -2,7 +2,6 @@ deployment:
   image: omaressameldin/bet-collector-bet:1.1
   port: 7501
   nameSuffix: -dep
-  podSuffix: -pod
 service:
   type: ClusterIP
   port: 7501

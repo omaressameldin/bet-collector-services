@@ -5,17 +5,18 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ include "user-chart.fullname" . }}{{ .Values.deployment.podSuffix }}
+      app: {{ include "user-chart.fullname" . }}{{ .Values.deployment.nameSuffix }}
       tier: backend
   replicas: {{ .Values.autoscaler.minReplicas }}
+  minReadySeconds: 15
   template:
     metadata:
       labels:
-        app: {{ include "user-chart.fullname" . }}{{ .Values.deployment.podSuffix }}
+        app: {{ include "user-chart.fullname" . }}{{ .Values.deployment.nameSuffix }}
         tier: backend
     spec:
       containers:
-        - name: {{ include "user-chart.fullname" . }}{{ .Values.deployment.podSuffix }}
+        - name: {{ include "user-chart.fullname" . }}{{ .Values.deployment.nameSuffix }}
           image: {{ .Values.deployment.image }}
           ports:
             - containerPort: {{ .Values.deployment.port }}
@@ -60,7 +61,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "user-chart.name" . }}{{ .Values.deployment.nameSuffix }}
+    name: {{ include "user-chart.fullname" . }}{{ .Values.deployment.nameSuffix }}
   minReplicas: {{ .Values.autoscaler.minReplicas }}
   maxReplicas: {{ .Values.autoscaler.maxReplicas }}
   metrics:
