@@ -1,0 +1,12 @@
+deployment:
+  image: omaressameldin/bet-collector-bet:1.2
+  port: 7501
+  nameSuffix: -dep
+service:
+  type: ClusterIP
+  port: 7501
+  nameSuffix: -svc
+autoscaler:
+  minReplicas: 2
+  maxReplicas: 10
+  nameSuffix: -scaler

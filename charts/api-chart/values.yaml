@@ -1,0 +1,15 @@
+deployment:
+  image: omaressameldin/bet-collector-graphql:1.6
+  port: 8500
+  nameSuffix: -dep
+service:
+  type: ClusterIP
+  port: 8500
+  nameSuffix: -svc
+autoscaler:
+  minReplicas: 3
+  maxReplicas: 10
+  nameSuffix: -scaler
+ingress:
+  name: bet-collector
+  path: /api
