@@ -18,9 +18,9 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     ports:
       - "5601:5601"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
   elasticsearch-service:
-    depends_on:
-      - elasticsearch
     build:
       context: ./elasticsearch-service/.
       args:
@@ -29,7 +29,7 @@ services:
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
     ports:
-       - "${ELASTIC_SERVICE_PORT}:${ELASTIC_SERVICE_PORT}"
+          - "${ELASTIC_SERVICE_PORT}:${ELASTIC_SERVICE_PORT}"
   user-proto-gen:
     image: omaressameldin/proto-gen
     environment:
@@ -92,3 +92,5 @@ services:
       - GRAPHQL_API_PORT=${GRAPHQL_API_PORT}
     ports:
       - "${GRAPHQL_API_PORT}:${GRAPHQL_API_PORT}"
+volumes:
+  elasticsearch-data:
