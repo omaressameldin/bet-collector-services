@@ -1,5 +1,35 @@
 version: '3.2'
 services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+  kibana:
+    depends_on:
+      - elasticsearch
+    image: docker.elastic.co/kibana/kibana:7.5.1
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+  elasticsearch-service:
+    build:
+      context: ./elasticsearch-service/.
+      args:
+        - PORT=${ELASTIC_SERVICE_PORT}
+        - APP_SRC=${ELASTIC_SERVICE_SRC}
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+          - "${ELASTIC_SERVICE_PORT}:${ELASTIC_SERVICE_PORT}"
   user-proto-gen:
     image: omaressameldin/proto-gen
     environment:
@@ -62,3 +92,5 @@ services:
       - GRAPHQL_API_PORT=${GRAPHQL_API_PORT}
     ports:
       - "${GRAPHQL_API_PORT}:${GRAPHQL_API_PORT}"
+volumes:
+  elasticsearch-data:
