@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"net/http"
@@ -15,7 +16,9 @@ func SendRequest(client *elasticsearch7.Client, req esapi.Request) (*string, err
 		return nil, err, http.StatusBadRequest
 	}
 
-	resString := res.String()
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(res.Body)
+	resString := buf.String()
 	if res.IsError() {
 		return nil, errors.New(resString), res.StatusCode
 	}
